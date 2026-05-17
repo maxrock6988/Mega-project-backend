@@ -1,0 +1,16 @@
+{
+  "name": "project_backend",
+  "version": "1.0.0",
+  "description": "a project managment application for beginner",
+  "keywords": [],
+  "license": "ISC",
+  "author": "iash das",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "devDependencies": {
+    "prettier": "3.8.3"
+  }
+}
