@@ -4,7 +4,7 @@ export const UserRolesEnum = {
   MEMBER: "member",
 };
 
-export const AvailableUserRole = Object.values(UserRolesEnum);  // object to array by object.values
+export const AvailableUserRole = Object.values(UserRolesEnum); // object to array by object.values
 
 export const TaskStatusEnum = {
   TODO: "todo",
