@@ -1,5 +1,5 @@
 import { User } from "../models/user.models.js";
-import { Project, project } from "../models/project.models.js";
+import { Project} from "../models/project.models.js";
 import { ProjectMember } from "../models/projectmember.models.js";
 
 import { ApiResponse } from "../utils/api-response.js";
@@ -14,55 +14,63 @@ import mongoose from "mongoose";
 import { UserRolesEnum } from "../utils/constant.js";
 
 const getproject = asyncHandler(async (req, res) => {
-  const project = await ProjectMember.aggregate([
-    {
-      $match: {
-        user: new mongoose.Types.ObjectId(req.user._id),
-      },
+  const projects = await ProjectMember.aggregate([
+  {
+    $match: {
+      user: new mongoose.Types.ObjectId(req.user._id),
     },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "projects",
-        foreignField: "_id",
-        as: "projects",
-        pipeline: [
-          {
-            $lookup: {
-              from: "projectmembers",
-              localField: "_id",
-              foreignField: "projects",
-              as: "projectmembers",
-            },
+  },
+  {
+    $lookup: {
+      from: "projects",
+      localField: "project",
+      foreignField: "_id",
+      as: "project",
+      pipeline: [
+        {
+          $lookup: {
+            from: "projectmembers",
+            localField: "_id",
+            foreignField: "project",
+            as: "projectMembers",
           },
-          {
-            $addFields: {
-              members: {
-                $size: "$projectmembers",
-              },
-            },
-          },
-        ],
-      },
-    },
-    {
-      $unwind:"$project"
-    },
-    {
-      $project:{
-        project:{
-          _id:1,
-          name:1,
-          description:1,
-          memebers:1,
-          createdAt:1,
-          createdBy:1,
         },
-        role:1,
-        _id:0,
-      }
-    }
-  ]);
+        {
+          $addFields: {
+            members: {
+              $size: "$projectMembers",
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
+    $unwind: "$project",
+  },
+  {
+    $project: {
+      project: {
+        _id: "$project._id",
+        name: "$project.name",
+        description: "$project.description",
+        members: "$project.members",
+        createdAt: "$project.createdAt",
+        createdBy: "$project.createdBy",
+      },
+      role: 1,
+      _id: 0,
+    },
+  },
+]);
+
+return res.status(200).json(
+    new ApiResponse(
+        200,
+        projects,
+        "Projects fetched successfully"
+    )
+);
 });
 
 const getprojectById = asyncHandler(async (req, res) => {});
